@@ -1,6 +1,6 @@
 package main.Entity;
 
-public abstract class Component {
+public  class Component {
 
     // Attributes common to all components
     protected int id;
@@ -27,8 +27,6 @@ public abstract class Component {
         this.id = id;
     }
 
-    // Abstract method to calculate the cost
-    public abstract double calculateCost();
 
     // Getters and Setters
     public String getNom() {

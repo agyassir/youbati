@@ -3,11 +3,12 @@ package main.Service.Implementation;
 import main.Entity. Labor;
 import main.Repository.GenericsRepo;
 import main.Service.GenericService;
+import main.Service.LaborServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
 
-public class  LaborServiceImpl implements GenericService<Labor> {
+public class  LaborServiceImpl implements LaborServiceInterface {
 
 
     private final GenericsRepo<Labor> LaborRepository;
@@ -39,6 +40,12 @@ public class  LaborServiceImpl implements GenericService<Labor> {
     @Override
     public void delete(int id) {
         LaborRepository.deleteById(id);
+    }
+
+    @Override
+    public double calculateCost(Labor labor){
+        double costWithoutTax = labor.getTauxHoraire() * labor.getHeuresTravail() * labor.getProductiviteOuvrier();
+        return costWithoutTax + (costWithoutTax * labor.getTauxTVA() / 100);
     }
 }
 

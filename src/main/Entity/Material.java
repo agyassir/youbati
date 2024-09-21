@@ -27,11 +27,7 @@ public class Material extends Component {
         this.coefficientQualite = coefficientQualite;
     }
 
-    @Override
-    public double calculateCost() {
-        double costWithoutTax = (coutUnitaire * quantite * coefficientQualite) + coutTransport;
-        return costWithoutTax + (costWithoutTax * tauxTVA / 100);
-    }
+
 
     @Override
     public String toString() {

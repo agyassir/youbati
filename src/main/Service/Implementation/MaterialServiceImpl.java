@@ -3,11 +3,12 @@ package main.Service.Implementation;
 import main.Entity.Material;
 import main.Repository.GenericsRepo;
 import main.Service.GenericService;
+import main.Service.MaterialServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
 
-public class MaterialServiceImpl implements GenericService<Material> {
+public class MaterialServiceImpl implements MaterialServiceInterface{
 
     private final GenericsRepo<Material> materialRepository;
 
@@ -38,6 +39,13 @@ public class MaterialServiceImpl implements GenericService<Material> {
     @Override
     public void delete(int id) {
         materialRepository.deleteById(id);
+    }
+
+    @Override
+    public double calculateCost(Material material) {
+        Double coutUnitaire=material.getCoutUnitaire();
+        double costWithoutTax = (coutUnitaire * material.getQuantite() * material.getCoefficientQualite()) + material.getCoutTransport();
+        return costWithoutTax + (costWithoutTax * material.getTauxTVA() / 100);
     }
 }
 

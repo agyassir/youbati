@@ -37,11 +37,6 @@ public class Labor extends Component {
         this.productiviteOuvrier = productiviteOuvrier;
     }
 
-    @Override
-    public double calculateCost() {
-        double costWithoutTax = tauxHoraire * heuresTravail * productiviteOuvrier;
-        return costWithoutTax + (costWithoutTax * tauxTVA / 100);
-    }
 
     @Override
     public String toString() {
