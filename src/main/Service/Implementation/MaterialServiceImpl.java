@@ -2,13 +2,12 @@ package main.Service.Implementation;
 
 import main.Entity.Material;
 import main.Repository.GenericsRepo;
-import main.Service.GenericService;
-import main.Service.MaterialServiceInterface;
+import main.Service.ComponentServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
 
-public class MaterialServiceImpl implements MaterialServiceInterface{
+public class MaterialServiceImpl implements ComponentServiceInterface<Material> {
 
     private final GenericsRepo<Material> materialRepository;
 
@@ -46,6 +45,13 @@ public class MaterialServiceImpl implements MaterialServiceInterface{
         Double coutUnitaire=material.getCoutUnitaire();
         double costWithoutTax = (coutUnitaire * material.getQuantite() * material.getCoefficientQualite()) + material.getCoutTransport();
         return costWithoutTax + (costWithoutTax * material.getTauxTVA() / 100);
+    }
+
+    @Override
+    public double CostWTVA(Material material){
+        Double coutUnitaire=material.getCoutUnitaire();
+        double costWithoutTax = (coutUnitaire * material.getQuantite() * material.getCoefficientQualite()) + material.getCoutTransport();
+        return costWithoutTax;
     }
 }
 

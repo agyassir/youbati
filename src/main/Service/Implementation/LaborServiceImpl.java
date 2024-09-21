@@ -2,13 +2,12 @@ package main.Service.Implementation;
 
 import main.Entity. Labor;
 import main.Repository.GenericsRepo;
-import main.Service.GenericService;
-import main.Service.LaborServiceInterface;
+import main.Service.ComponentServiceInterface;
 
 import java.util.List;
 import java.util.Optional;
 
-public class  LaborServiceImpl implements LaborServiceInterface {
+public class  LaborServiceImpl implements ComponentServiceInterface<Labor> {
 
 
     private final GenericsRepo<Labor> LaborRepository;
@@ -43,9 +42,16 @@ public class  LaborServiceImpl implements LaborServiceInterface {
     }
 
     @Override
+
+    public double CostWTVA(Labor labor){
+        double cost = labor.getTauxHoraire() * labor.getHeuresTravail() * labor.getProductiviteOuvrier();
+        return cost;
+    }
+
+    @Override
     public double calculateCost(Labor labor){
         double costWithoutTax = labor.getTauxHoraire() * labor.getHeuresTravail() * labor.getProductiviteOuvrier();
-        return costWithoutTax + (costWithoutTax * labor.getTauxTVA() / 100);
+        return  costWithoutTax + (costWithoutTax * labor.getTauxTVA() / 100);
     }
 }
 

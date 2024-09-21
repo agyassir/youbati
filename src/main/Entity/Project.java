@@ -10,14 +10,14 @@ public class Project {
     private Integer id;
     private String nom;
     private Double coutTotal;
+
     private double margeBeneficiaire;
     private  ProjectStatus etatProjet;
     private Client client;
     private List<Component> components;
 
-    public Project(String nom, Double coutTotal,Double marge, ProjectStatus etatProjet) {
+    public Project(String nom, Double surface,Double marge, ProjectStatus etatProjet) {
         this.nom = nom;
-        this.coutTotal = coutTotal;
         this.etatProjet = etatProjet;
         this.margeBeneficiaire=marge;
     }
@@ -69,5 +69,14 @@ public class Project {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+
+    public List<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(List<Component> components) {
+        this.components = components;
     }
 }
