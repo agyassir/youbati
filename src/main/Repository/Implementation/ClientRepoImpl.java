@@ -1,6 +1,7 @@
 package main.Repository.Implementation;
 
 import main.Entity.Client;
+import main.Repository.ClientRepo;
 import main.Repository.GenericsRepo;
 import main.Util.DBConnection;
 
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ClientRepoImpl implements GenericsRepo<Client> {
+public class ClientRepoImpl implements ClientRepo {
 
     private Connection connection;
 
@@ -19,12 +20,13 @@ public class ClientRepoImpl implements GenericsRepo<Client> {
 
     @Override
     public Client create(Client client) {
-        String sql = "INSERT INTO client (nom, adresse, telephone, \"isProfessionnel\") VALUES (?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO client (FirstName,Lastname, adresse, telephone, \"isProfessionnel\") VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, client.getNom());
-            statement.setString(2, client.getAdresse());
-            statement.setString(3, client.getTelephone());
-            statement.setBoolean(4, client.isProfessionnel());
+            statement.setString(1, client.getFirstName());
+            statement.setString(2, client.getLastName());
+            statement.setString(3, client.getAdresse());
+            statement.setString(4, client.getTelephone());
+            statement.setBoolean(5, client.isProfessionnel());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 client.setId(rs.getInt("id"));
@@ -70,13 +72,14 @@ public class ClientRepoImpl implements GenericsRepo<Client> {
 
     @Override
     public Client update(Client client) {
-        String sql = "UPDATE client SET nom = ?, adresse = ?, telephone = ?, est_professionnel = ? WHERE id = ?";
+        String sql = "UPDATE client SET \"FirstName\" = ?, \"LastName\" = ?, adresse = ?, telephone = ?, est_professionnel = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, client.getNom());
-            statement.setString(2, client.getAdresse());
-            statement.setString(3, client.getTelephone());
-            statement.setBoolean(4, client.isProfessionnel());
-            statement.setLong(5, client.getId());
+            statement.setString(1, client.getFirstName());
+            statement.setString(2, client.getLastName());
+            statement.setString(3, client.getAdresse());
+            statement.setString(4, client.getTelephone());
+            statement.setBoolean(5, client.isProfessionnel());
+            statement.setLong(6, client.getId());
             statement.executeUpdate();
             return client;
         } catch (SQLException e) {
@@ -99,12 +102,32 @@ public class ClientRepoImpl implements GenericsRepo<Client> {
     // Utility method to map ResultSet to a Client object
     private Client mapResultSetToClient(ResultSet rs) throws SQLException {
         Client client = new Client(
-                rs.getString("nom"),
+                rs.getString("FirstName"),
+                rs.getString("LastName"),
                 rs.getString("adresse"),
                 rs.getString("telephone"),
-                rs.getBoolean("est_professionnel")
+                rs.getBoolean("is_professionnel")
         );
         client.setId(rs.getInt("id"));
         return client;
+    }
+
+    @Override
+    public List<Client> findByName(String name,String Lname) {
+        List<Client>clients=new ArrayList<>();
+        String sql = "SELECT * FROM client WHERE  firstname= ? AND lastname=?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, name);
+            statement.setString(2, Lname);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Client client = mapResultSetToClient(rs);
+                clients.add(client);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return clients;
     }
 }
