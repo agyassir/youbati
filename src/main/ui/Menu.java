@@ -53,7 +53,7 @@ public class Menu {
         System.out.println("╚═════════════════════════════════════════════════════════════════╝");
     }
 
-    public static List<Component>   printProjectMenuHeader(Scanner scanner, ComponentServiceInterface<Material> materialService,ComponentServiceInterface<Labor> laborService, double taxRate) {
+    public static Project   printProjectMenuHeader(Scanner scanner, ComponentServiceInterface<Material> materialService,ComponentServiceInterface<Labor> laborService, double taxRate) {
         List<Component> insertedMaterials = new ArrayList<>();
         int choice;
         System.out.println("╔═════════════════════════════════════════════════════════════════╗");
@@ -63,7 +63,7 @@ public class Menu {
         scanner.nextLine();
         String nom = scanner.nextLine();
         System.out.println("2. ➤ surface du cuisine");
-        int surface = scanner.nextInt();
+        Double surface = scanner.nextDouble();
 
         do {
             Material mat = createMaterial(materialService, scanner, taxRate);
@@ -82,8 +82,17 @@ public class Menu {
             scanner.nextLine();
         } while (choice2 == 1);
 
+        System.out.println("Do you want to add a profit margin ? (YES:1 / NO:2): ");
+        Double marge=0.0;
+        if (scanner.nextInt()==1){
+            System.out.println(" Insert your profit margin:  ");
+            marge=scanner.nextDouble();
 
-        return insertedMaterials;
+        }
+
+        Project project = new Project(nom,surface,marge, Project.ProjectStatus.EN_COURS);
+        project.setComponents(insertedMaterials);
+        return project;
     }
 
     public static Material createMaterial(ComponentServiceInterface<Material> materialService,Scanner scanner,Double TVA) {
@@ -123,7 +132,8 @@ public class Menu {
         scanner.nextLine();
         System.out.println("================================================================================================");
         Labor labor = new Labor(name, hourlyRate, workingHours, workerProductivity,TVA);
-        return laborService.create(labor);
+        laborService.create(labor);
+        return labor;
     }
 
 

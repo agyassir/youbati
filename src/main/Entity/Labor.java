@@ -7,7 +7,7 @@ public class Labor extends Component {
     private double productiviteOuvrier;
 
     public Labor(String nom, double tauxHoraire, double heuresTravail, double productiviteOuvrier, double tauxTVA) {
-        super(nom, tauxHoraire, heuresTravail, "Main-d'œuvre", tauxTVA);
+        super(nom,tauxTVA);
         this.tauxHoraire = tauxHoraire;
         this.heuresTravail = heuresTravail;
         this.productiviteOuvrier = productiviteOuvrier;

@@ -18,13 +18,13 @@ public class LaborRepoImpl implements GenericsRepo<Labor> {
 
     @Override
     public Labor create(Labor labor) {
-        String sql = "INSERT INTO labor (nom, taux_horaire, heures_travail, productivite_ouvrier, taux_tva) VALUES (?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO labor (nom, taux_tva, taux_horaire, heures_travail, productivite_ouvrier) VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, labor.getNom());
-            statement.setDouble(2, labor.getTauxHoraire());
-            statement.setDouble(3, labor.getHeuresTravail());
-            statement.setDouble(4, labor.getProductiviteOuvrier());
-            statement.setDouble(5, labor.getTauxTVA());
+            statement.setDouble(2, labor.getTauxTVA());
+            statement.setDouble(3, labor.getTauxHoraire());
+            statement.setDouble(4, labor.getHeuresTravail());
+            statement.setDouble(5, labor.getProductiviteOuvrier());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 labor.setId(rs.getInt("id"));

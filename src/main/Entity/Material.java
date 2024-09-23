@@ -4,9 +4,13 @@ public class Material extends Component {
 
     private double coutTransport;
     private double coefficientQualite;
+    private double coutUnitaire;
+    private double quantite;
 
     public Material(String nom, double coutUnitaire, double quantite, double tauxTVA, double coutTransport, double coefficientQualite) {
-        super(nom, coutUnitaire, quantite, "Matériel", tauxTVA);
+        super(nom, tauxTVA);
+        this.coutUnitaire=coutUnitaire;
+        this.coutTransport=coutTransport;
         this.coutTransport = coutTransport;
         this.coefficientQualite = coefficientQualite;
     }
@@ -27,7 +31,21 @@ public class Material extends Component {
         this.coefficientQualite = coefficientQualite;
     }
 
+    public double getCoutUnitaire() {
+        return coutUnitaire;
+    }
 
+    public void setCoutUnitaire(double coutUnitaire) {
+        this.coutUnitaire = coutUnitaire;
+    }
+
+    public double getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(double quantite) {
+        this.quantite = quantite;
+    }
 
     @Override
     public String toString() {

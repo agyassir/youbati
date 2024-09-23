@@ -53,11 +53,12 @@ public class Main {
                 default:
                     System.out.println("\nChoix invalide ! Veuillez réessayer.");
             }
-
-                System.out.println("add tva: (%)");
-                Double tva=scanner.nextDouble();
-                Menu.printProjectMenuHeader(scanner,materialService,laborService,tva);
-
+            System.out.println("add tva: (%)");
+            Double tva=scanner.nextDouble();
+            Project projet= Menu.printProjectMenuHeader(scanner,materialService,laborService,tva);
+            projet.setCoutTotal(projectService.calculateTotalCost(projet));
+            projet.setClient(client);
+                projectService.create(projet);
             break;
             case 2:
                 break;
