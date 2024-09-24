@@ -1,6 +1,8 @@
 package main.Repository.Implementation;
 
 import main.Entity.Material;
+import main.Entity.Project;
+import main.Repository.ComponentsRepo;
 import main.Repository.GenericsRepo;
 import main.Util.DBConnection;
 
@@ -88,6 +90,32 @@ public class MaterialRepoImpl implements GenericsRepo<Material> {
             return null;
         }
     }
+//@Override
+//    public void updateMaterials(List<Material> materials, Project projet) {
+//        String sql = "UPDATE material SET project_id = ? WHERE id = ?";
+//
+//        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+//            // Iterate through the list of materials
+//            for (Material material : materials) {
+//                // Set the parameters for each material
+//
+//                statement.setInt(2, material.getId());
+//                statement.setInt(1, projet.getId());
+//
+//                // Add this update to the batch
+//                statement.addBatch();
+//            }
+//
+//            // Execute the batch update
+//            int[] affectedRows = statement.executeBatch();
+//            System.out.println("Updated " + affectedRows.length + " rows.");
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
 
     @Override
     public void deleteById(int id) {

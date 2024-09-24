@@ -7,7 +7,7 @@ public  class Component {
     protected String nom;
 
     protected double tauxTVA;
-
+    protected Project project;
     // Constructor
     public Component(String nom,  double tauxTVA) {
         this.nom = nom;
@@ -22,6 +22,13 @@ public  class Component {
         this.id = id;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
     // Getters and Setters
     public String getNom() {

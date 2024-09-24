@@ -10,7 +10,7 @@ public class Material extends Component {
     public Material(String nom, double coutUnitaire, double quantite, double tauxTVA, double coutTransport, double coefficientQualite) {
         super(nom, tauxTVA);
         this.coutUnitaire=coutUnitaire;
-        this.coutTransport=coutTransport;
+        this.quantite=quantite;
         this.coutTransport = coutTransport;
         this.coefficientQualite = coefficientQualite;
     }

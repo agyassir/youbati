@@ -1,6 +1,7 @@
 package main.Repository.Implementation;
 
 import main.Entity.Client;
+import main.Entity.Project;
 import main.Repository.ClientRepo;
 import main.Repository.GenericsRepo;
 import main.Util.DBConnection;
@@ -20,7 +21,7 @@ public class ClientRepoImpl implements ClientRepo {
 
     @Override
     public Client create(Client client) {
-        String sql = "INSERT INTO client (FirstName,Lastname, adresse, telephone, \"isProfessionnel\") VALUES (?, ?, ?, ?, ?) RETURNING id";
+        String sql = "INSERT INTO client (FirstName,Lastname, adresse, telephone, \"is_professionnel\") VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, client.getFirstName());
             statement.setString(2, client.getLastName());
@@ -130,4 +131,6 @@ public class ClientRepoImpl implements ClientRepo {
 
         return clients;
     }
+
+
 }

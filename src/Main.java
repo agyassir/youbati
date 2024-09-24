@@ -3,11 +3,9 @@ import main.Repository.ClientRepo;
 import main.Repository.EstimateRepo;
 import main.Repository.GenericsRepo;
 import main.Repository.Implementation.*;
-import main.Service.ClientServiceInterface;
-import main.Service.ComponentServiceInterface;
-import main.Service.GenericService;
+import main.Repository.ProjectRepo;
+import main.Service.*;
 import main.Service.Implementation.*;
-import main.Service.ProjectServiceInterface;
 import main.ui.Menu;
 
 import java.sql.SQLException;
@@ -20,7 +18,7 @@ public class Main {
         Scanner scanner=new Scanner(System.in);
 
         //hna kayn repositories
-        GenericsRepo<Project> projectRepo= new ProjectRepoImpl();
+        ProjectRepo projectRepo= new ProjectRepoImpl();
         GenericsRepo<Material> materialRepo = new MaterialRepoImpl();
         ClientRepo clientRepo = new ClientRepoImpl();
         EstimateRepo EstimateRepo = new EstimateRepoImpl();
@@ -30,7 +28,7 @@ public class Main {
         ComponentServiceInterface<Labor> laborService = new LaborServiceImpl(laborRepo);
         ProjectServiceInterface projectService = new ProjectServiceImpl(projectRepo,materialService,laborService);
         ClientServiceInterface clientService = new ClientServiceImpl(clientRepo);
-        GenericService<Estimate> estimateService = new EstimateServiceImpl(EstimateRepo);
+        EstimateServiceInterface estimateService = new EstimateServiceImpl(EstimateRepo);
         Client client=null;
         int choice =Menu.displayMainMenu(scanner);
         switch (choice){
@@ -49,6 +47,7 @@ public class Main {
                     }
                     break;
                 case 2:
+                    Menu.AjouterClient(scanner,clientService);
                     break;
                 default:
                     System.out.println("\nChoix invalide ! Veuillez réessayer.");
@@ -58,9 +57,28 @@ public class Main {
             Project projet= Menu.printProjectMenuHeader(scanner,materialService,laborService,tva);
             projet.setCoutTotal(projectService.calculateTotalCost(projet));
             projet.setClient(client);
-                projectService.create(projet);
+            projet=projectService.create(projet);
+            projet.toString();
+                System.out.println("---Saving the quote---");
+                Estimate estimate=Menu.quoteDisplay(scanner);
+                estimate.setProject(projet);
+                estimateService.calculateEstimatecout(projet,estimate);
+                projet.toString();
+                estimate.toString();
+            Main.main(args);
             break;
             case 2:
+                 choice2=Menu.affichageMenu(scanner);
+                 switch(choice2){
+                     case 1:
+                         Menu.MyProjects(scanner,projectService,clientService);
+                        Main.main(args);
+                         break;
+                     case 2:
+                         Menu.AllProject(projectService);
+                         Main.main(args);
+                         break;
+                 }
                 break;
         }
 

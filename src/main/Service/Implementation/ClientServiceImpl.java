@@ -1,6 +1,7 @@
 package main.Service.Implementation;
 
 import main.Entity. Client;
+import main.Entity.Project;
 import main.Repository.ClientRepo;
 import main.Repository.GenericsRepo;
 import main.Service.ClientServiceInterface;
@@ -47,6 +48,8 @@ public class  ClientServiceImpl implements ClientServiceInterface {
     public List<Client> findByName(String name,String lname) {
         return   ClientRepository.findByName(name,lname);
     }
+
+
 }
 
 

@@ -10,7 +10,6 @@ public class Project {
     private Integer id;
     private String nom;
     private Double coutTotal;
-
     private double margeBeneficiaire;
     private  ProjectStatus etatProjet;
     private Client client;
@@ -26,6 +25,8 @@ public class Project {
     public Integer getId() {
         return id;
     }
+
+
 
     public double getMargeBeneficiaire() {
         return margeBeneficiaire;
@@ -78,5 +79,21 @@ public class Project {
 
     public void setComponents(List<Component> components) {
         this.components = components;
+    }
+
+    @Override
+    public String toString() {
+        return "\n================================================================================================\n" +
+                "=                                     Project Details                                            =\n" +
+                "================================================================================================\n" +
+                "  Project ID        : " + id + "\n" +
+                "  Project Name      : '" + nom + "'\n" +
+                "  Profit Margin     : " + margeBeneficiaire + "%\n" +
+                "  Total Cost        : " + coutTotal + " DH\n" +
+                "  Total Cost with Profit Margin: " + coutTotal+(coutTotal*margeBeneficiaire)/100 + " DH\n" +
+                "  Status            : " + etatProjet + "\n" +
+                "  Client Name       : " + client.getFirstName() + "\n" +
+                "================================================================================================\n";
+
     }
 }

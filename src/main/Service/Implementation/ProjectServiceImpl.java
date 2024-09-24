@@ -5,6 +5,7 @@ import main.Entity.Labor;
 import main.Entity.Material;
 import main.Entity.Project;
 import main.Repository.GenericsRepo;
+import main.Repository.ProjectRepo;
 import main.Service.ComponentServiceInterface;
 import main.Service.ProjectServiceInterface;
 
@@ -13,11 +14,11 @@ import java.util.Optional;
 
 public class ProjectServiceImpl implements ProjectServiceInterface {
 
-    private final GenericsRepo<Project> projectRepository;
+    private final ProjectRepo projectRepository;
     private final ComponentServiceInterface<Material> materialService;
     private final ComponentServiceInterface<Labor> LaborService;
 
-    public ProjectServiceImpl(GenericsRepo<Project> projectRepository, ComponentServiceInterface<Material> materialService, ComponentServiceInterface<Labor> laborService) {
+    public ProjectServiceImpl(ProjectRepo projectRepository, ComponentServiceInterface<Material> materialService, ComponentServiceInterface<Labor> laborService) {
         this.projectRepository = projectRepository;
         this.materialService = materialService;
         this.LaborService = laborService;
@@ -67,6 +68,11 @@ public class ProjectServiceImpl implements ProjectServiceInterface {
     TotalCost=ComponentTotalCost+CoutMarge;
 
         return TotalCost;
+    }
+
+    @Override
+    public List<Project> MyprojectsbyID(int id){
+        return projectRepository.findMyProjectByid(id);
     }
 }
 

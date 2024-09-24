@@ -1,13 +1,15 @@
 package main.Service.Implementation;
 
 import main.Entity. Estimate;
+import main.Entity.Project;
 import main.Repository.GenericsRepo;
+import main.Service.EstimateServiceInterface;
 import main.Service.GenericService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class  EstimateServiceImpl implements GenericService<Estimate> {
+public class  EstimateServiceImpl implements EstimateServiceInterface {
 
 
     private final GenericsRepo<Estimate>   EstimateRepository;
@@ -39,6 +41,19 @@ public class  EstimateServiceImpl implements GenericService<Estimate> {
     @Override
     public void delete(int id) {
         EstimateRepository.deleteById(id);
+    }
+
+
+    @Override
+    public void calculateEstimatecout(Project project,Estimate estimate) {
+        project.getCoutTotal();
+        if (project.getClient().isProfessionnel()){
+            estimate.setMontantEstime((project.getCoutTotal()*9)/100);
+        }else{
+            estimate.setMontantEstime(project.getCoutTotal());
+        }
+
+
     }
 }
 

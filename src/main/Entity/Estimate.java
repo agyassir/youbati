@@ -12,8 +12,7 @@ public class Estimate {
     private boolean accepte;
     private Project project;
 
-    public Estimate(double montantEstime, Date dateEmission, Date dateValidite, boolean accepte) {
-        this.montantEstime = montantEstime;
+    public Estimate( Date dateEmission, Date dateValidite, boolean accepte) {
         this.dateEmission = dateEmission;
         this.dateValidite = dateValidite;
         this.accepte = accepte;
@@ -81,5 +80,18 @@ public class Estimate {
         System.out.println("Date de Validité: " + dateValidite);
         System.out.println("Estimation Acceptée: " + (accepte ? "Oui" : "Non"));
     }
+
+    @Override
+    public String toString() {
+        return "\n================================================================================================\n" +
+                "=                                     Quote Details                                           =\n" +
+                "================================================================================================\n" +
+                "  Estimated Amount  : " + montantEstime + " DH\n" +
+                "  Date of Emission  : " + dateEmission + "\n" +
+                "  Validity Date     : " + dateValidite + "\n" +
+                "  Accepted          : " + (accepte ? "Yes" : "No") + "\n" +
+                "================================================================================================\n";
+    }
+
 }
 

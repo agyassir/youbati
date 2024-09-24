@@ -122,11 +122,11 @@ public class EstimateRepoImpl implements EstimateRepo {
                 .findById(rs.getInt("project_id"));
 
         Estimate estimate = new Estimate(
-                rs.getDouble("montant_estime"),
                 rs.getDate("date_emission"),
                 rs.getDate("date_validite"),
                 rs.getBoolean("accepte")
         );
+        estimate.setMontantEstime(rs.getDouble("montant_estime"));
 
         estimate.setProject(oproject.orElse(null));
 

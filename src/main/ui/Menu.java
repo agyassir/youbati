@@ -2,7 +2,11 @@ package main.ui;
 import main.Entity.*;
 import main.Service.ClientServiceInterface;
 import main.Service.ComponentServiceInterface;
+import main.Service.ProjectServiceInterface;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Menu {
@@ -54,7 +58,9 @@ public class Menu {
     }
 
     public static Project   printProjectMenuHeader(Scanner scanner, ComponentServiceInterface<Material> materialService,ComponentServiceInterface<Labor> laborService, double taxRate) {
-        List<Component> insertedMaterials = new ArrayList<>();
+        List<Material> insertedMaterials = new ArrayList<>();
+        List<Labor> insertedLabor = new ArrayList<>();
+        List<Component> components = new ArrayList<>();
         int choice;
         System.out.println("╔═════════════════════════════════════════════════════════════════╗");
         System.out.println("║                       \uD83D\uDEE0\uFE0F create the project                     ║");
@@ -68,19 +74,23 @@ public class Menu {
         do {
             Material mat = createMaterial(materialService, scanner, taxRate);
             insertedMaterials.add(mat);
+            components.add(mat);
             System.out.println("Do you want to add another material? (YES:1 / NO:2): ");
             choice = scanner.nextInt();
             scanner.nextLine();
         } while (choice == 1);
+        displayMaterialDetails(insertedMaterials,materialService);
 
         int choice2;
         do {
             Labor labor = addLabor(laborService, scanner, taxRate);
-            insertedMaterials.add(labor);
+            insertedLabor.add(labor);
+            components.add(labor);
             System.out.println("Do you want to add another labor? (YES:1 / NO:2): ");
             choice2 = scanner.nextInt();
             scanner.nextLine();
         } while (choice2 == 1);
+        displayLaborDetails(insertedLabor,laborService);
 
         System.out.println("Do you want to add a profit margin ? (YES:1 / NO:2): ");
         Double marge=0.0;
@@ -91,7 +101,7 @@ public class Menu {
         }
 
         Project project = new Project(nom,surface,marge, Project.ProjectStatus.EN_COURS);
-        project.setComponents(insertedMaterials);
+        project.setComponents(components);
         return project;
     }
 
@@ -136,8 +146,17 @@ public class Menu {
         return labor;
     }
 
+    public static int affichageMenu(Scanner scan){
+        System.out.println("╔═════════════════════════╗");
+        System.out.println("║         Affichage       ║");
+        System.out.println("╚═════════════════════════╝");
+        System.out.println("1. ➤ Myprojects");
+        System.out.println("2. ➤ All projects");
+        System.out.println("3. ➤ Quitter");
+        return getMenuSelection(scan);
 
-    // Method to display Client Menu Options
+    }
+
     private static void printClientMenuOptions() {
         System.out.println("Souhaitez-vous :");
         System.out.println("1. 🔎 Chercher un client existant");
@@ -193,4 +212,148 @@ public class Menu {
         }
 
     }
+
+    public static void AjouterClient(Scanner scanner, ClientServiceInterface clientService){
+        Client client=null;
+
+        System.out.println("insert firstname(family name):");
+        scanner.nextLine();
+        String fname=scanner.nextLine();
+        System.out.println("insert lastname(personnal name):");
+        String lname=scanner.nextLine();
+        System.out.println("insert his adresse:");
+        String adr=scanner.nextLine();
+        System.out.println("insert his number:");
+        String number= scanner.nextLine();
+        System.out.println("is he a professionnal labor:(1.yes 2.no) ");
+        int pro=scanner.nextInt();
+        if (pro==1){
+         client=new Client(fname,lname,adr,number,true);}else {
+            client=new Client(fname,lname,adr,number,false);
+        }
+        clientService.create(client);
+
+    }
+
+    public static void MyProjects(Scanner scanner, ProjectServiceInterface projectService,ClientServiceInterface clientService){
+        List<Project> myProject=new ArrayList<>();
+        System.out.println("would you like to use your id(1) or you name(2)");
+        int ch=scanner.nextInt();
+        if(ch==1){
+            System.out.println("please insert you id");
+            int id=scanner.nextInt();
+
+            myProject=projectService.MyprojectsbyID(id);
+
+            System.out.printf("%-5s %-20s %-20s %-15s %-15s%n", "ID", "nomproject", "coutotal", "etatproject", "client_id");
+            System.out.println("-------------------------------------------------------------------------------");
+            for (Project p : myProject) {
+                System.out.printf("%-5d %-20s %-20s %-15s %-15s%n",
+                        p.getId(), p.getNom(), p.getCoutTotal(), p.getEtatProjet(), id
+                );
+            }
+        }else if (ch==2){
+            Client client=null;
+            HashMap<String,String> name = Menu.ClientSearch(scanner);
+            List<Client> clients=  clientService.findByName(name.get("fname"), name.get("lname"));
+            if (clients.size()==0){
+                System.out.println("Utilisateur non trouvé !");
+            } else if (clients.size()==1) {
+                client=Menu.viewClient(clients.get(0));
+            }else{
+                client= Menu.viewClients(clients,clientService,scanner);
+            }
+
+            myProject=projectService.MyprojectsbyID(client.getId());
+
+            System.out.printf("%-5s %-20s %-20s %-15s %-15s%n", "ID", "nomproject", "coutotal", "etatproject", "client_id");
+            System.out.println("-------------------------------------------------------------------------------");
+            for (Project p : myProject) {
+                p.setClient(client);
+                System.out.printf("%-5d %-20s %-20s %-15s %-15s%n",
+                        p.getId(), p.getNom(), p.getCoutTotal(), p.getEtatProjet(), p.getClient() != null ? p.getClient().getFirstName()+" "+p.getClient().getLastName() : "Aucun utilisateur"
+                );
+            }
+
+        }
+
+
+    }
+    public static void AllProject(ProjectServiceInterface projectService){
+        List<Project> myProject=new ArrayList<>();
+
+        myProject=projectService.getAll();
+
+        System.out.printf("%-5s %-20s %-20s %-15s %-15s%n", "ID", "nomproject", "coutotal", "etatproject","Client");
+        System.out.println("-------------------------------------------------------------------------------");
+        for (Project p : myProject) {
+            System.out.printf("%-5d %-20s %-20s %-15s %-15s%n",
+                    p.getId(), p.getNom(), p.getCoutTotal(), p.getEtatProjet(),p.getClient().getFirstName()
+            );
+        }
+    }
+    public static void displayMaterialDetails(List<Material>materials,ComponentServiceInterface<Material> materialService) {
+        System.out.println("================================================================================================");
+        System.out.println("=                                     Material Details                                            ");
+        System.out.println("================================================================================================");
+        System.out.println("------------------------------------------------------------------------------------------------");
+        Double totalwtiva=0.0;
+        Double total=0.0;
+        for (Material material : materials) {
+            Double mcost=materialService.CostWTVA(material);
+            Double mcosttva=materialService.calculateCost(material);
+            System.out.println("[" + material.getNom() + "]" + "\t\t Quantity : " + material.getQuantite() + "\t\tUnit Cost : " + material.getCoutUnitaire() + "\t\t Transport Cost : " + material.getCoutTransport() + "\t\t Quality Coefficient : " + material.getCoefficientQualite() + "\n" +
+                    "Total Cost: " + mcost + "\n" +
+                    "Total Cost with VAT: " + mcosttva + "\n");
+            System.out.println("------------------------------------------------------------------------------------------------");
+            total+=mcost;
+            totalwtiva+=mcosttva;
+        }
+
+        System.out.println("Total Cost for all materials without VAT: " + total);
+        System.out.println("Total Cost for all materials with VAT: " + totalwtiva);
+        System.out.println("================================================================================================");
+    }
+    public static void displayLaborDetails(List<Labor> labors,ComponentServiceInterface<Labor> laborService) {
+        Double total=0.0;
+               Double totaltva=0.0;
+
+        for (Labor labor : labors) {
+            System.out.println("[" + labor.getNom() + "]" + "\t\t Hourly Rate : " + labor.getTauxHoraire() + "\t\t Working Hours : " + labor.getHeuresTravail() + "\t\t Worker Productivity : " + labor.getProductiviteOuvrier() + "\n" +
+                    "Total Cost: " + laborService.CostWTVA(labor) + "\n" +
+                    "Total Cost with VAT: " + laborService.calculateCost(labor) + "\n");
+            System.out.println("------------------------------------------------------------------------------------------------");
+        total+=laborService.CostWTVA(labor);
+        totaltva+=laborService.calculateCost(labor);
+        }
+
+
+
+        System.out.println("Total Cost for all labors without VAT: " + total);
+        System.out.println("Total Cost for all labors with VAT: " + totaltva);
+
+    }
+        public static Estimate quoteDisplay(Scanner scanner){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Entrez la date d'émission du devis (format : jj/mm/aaaa) :");
+        String emission = scanner.nextLine();
+        LocalDate checkInDate = LocalDate.parse(emission, formatter);
+        Date dateEmission = Date.from(checkInDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        System.out.println("Entrez la date de validité du devis (format : jj/mm/aaaa) :");
+        String validity = scanner.nextLine();
+        LocalDate validityDate = LocalDate.parse(validity, formatter);
+        Date dateValidite = Date.from(validityDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        System.out.println("are you sure you want to proceed?? : (1.yes / 2.no)");
+        int choix=scanner.nextInt();
+        if (choix==1){
+            Estimate estimate=new Estimate(dateEmission,dateValidite,true);
+            return estimate;
+        }else{
+            Estimate estimate=new Estimate(dateEmission,dateValidite,false);
+            return estimate;
+        }
+
+
+    }
+
 }

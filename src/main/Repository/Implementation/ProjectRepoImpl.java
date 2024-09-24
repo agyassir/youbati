@@ -1,8 +1,10 @@
 package main.Repository.Implementation;
 
 import main.Entity.Client;
+import main.Entity.Component;
 import main.Entity.Project;
 import main.Repository.GenericsRepo;
+import main.Repository.ProjectRepo;
 import main.Util.DBConnection;
 
 import java.sql.*;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ProjectRepoImpl implements GenericsRepo<Project> {
+public class ProjectRepoImpl implements ProjectRepo {
 
 
     private Connection connection;
@@ -32,7 +34,9 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 project.setId(rs.getInt("id"));
+                project.getComponents();
             }
+            addComponents(project);
             return project;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,7 +51,7 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
             statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                Project project = mapResultSetToProject(rs);
+                Project project = SetToProject(rs);
                 return Optional.of(project);
             }
         } catch (SQLException e) {
@@ -63,7 +67,7 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
         try (Statement statement = connection.createStatement()) {
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()) {
-                Project project = mapResultSetToProject(rs);
+                Project project = SetToProject(rs);
                 projects.add(project);
             }
         } catch (SQLException e) {
@@ -102,7 +106,7 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
     }
 
     // Utility method to map ResultSet to a Project object
-    private Project mapResultSetToProject(ResultSet rs) throws SQLException {
+    private Project SetToProject(ResultSet rs) throws SQLException {
         // Assuming Project has a ProjectStatus Enum, and client is loaded separately
         Project project = new Project(
                 rs.getString("nom_projet"),
@@ -111,7 +115,7 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
                 Project.ProjectStatus.valueOf(rs.getString("etat_projet"))
         );
         project.setId(rs.getInt("id"));
-//        project.setCoutTotal(rs.getDouble("cout_total"));
+        project.setCoutTotal(rs.getDouble("cout_total"));
 
         // Fetch the Client entity using client_id (this can be done by using ClientRepository)
         int clientId = rs.getInt("client_id");
@@ -120,4 +124,44 @@ public class ProjectRepoImpl implements GenericsRepo<Project> {
 
         return project;
     }
+
+    @Override
+
+    public List<Project> findMyProjectByid(int id){
+        List<Project> projects=new ArrayList<>();
+        String sql="SELECT * FROM project WHERE client_id=?";
+        try(PreparedStatement statement=connection.prepareStatement(sql)){
+            statement.setInt(1,id);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+                Project prjet= SetToProject(rs);
+                projects.add(prjet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return projects;
+    }
+
+
+    public void addComponents(Project project){
+        String sql = "UPDATE component SET project_id = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (Component component : project.getComponents()) {
+
+                statement.setInt(1, project.getId());
+
+                statement.setInt(2, component.getId());
+
+                statement.addBatch();
+            }
+
+            statement.executeBatch();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
 }
